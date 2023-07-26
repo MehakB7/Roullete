@@ -95,7 +95,7 @@ contract Roulette is RrpRequesterV0 {
 
 
   function topUpSponserWallet() external  payable{
-     require(msg.value == 0, "msg.value is 0");
+     require(msg.value != 0, "msg.value is 0");
      (bool success, ) = sponsorWallet.call{value: msg.value}("");
      if(!success){
        revert TransferToSponsorWalletFailed();
