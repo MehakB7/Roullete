@@ -2,6 +2,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
+import Gameplay from "../Components/Gameplay";
 
 const Home: NextPage = () => {
   return (
@@ -17,6 +18,7 @@ const Home: NextPage = () => {
 
       <main className={styles.main}>
         <ConnectButton />
+        <Gameplay />
       </main>
 
       <footer className={styles.footer}>
