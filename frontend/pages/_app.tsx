@@ -13,7 +13,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const { connectors } = getDefaultWallets({
   appName: "Roullete",
-  projectId: "YOUR_PROJECT_ID",
+  projectId: "Roullete",
   chains,
 });
 
