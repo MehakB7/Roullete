@@ -1,6 +1,7 @@
 import { useAccount, useContractWrite, useContractEvent } from "wagmi";
 import { contractAddress } from "../contracts/constant";
 import abi from "../contracts/roullete.json";
+import { ethers } from "ethers";
 
 const Gameplay = () => {
   const address = useAccount();
@@ -10,13 +11,15 @@ const Gameplay = () => {
     abi: abi,
     functionName: "betOneThird",
     args: ["1"],
+    value: ethers.utils.parseEther("0.001"),
     onSuccess(data: any) {
       console.log("trx is send...", data);
     },
     onError(error: any) {
-      console.log("trx is send...", error);
+      console.log("error while sending trxs is send...", error);
     },
   });
+  console.log("address is", makeBet);
 
   useContractEvent({
     address: contractAddress,

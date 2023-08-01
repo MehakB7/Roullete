@@ -345,7 +345,7 @@ contract Roulette is RrpRequesterV0 {
         userBetEvenOdd[msg.sender] = true;
         if (_isEven) {
             userToEven[msg.sender] = true;
-        } else {}
+        }
         spinToBetType[spinCount] = BetType.EvenOdd;
         _spinRouletteWheel(spinCount);
         return (userToSpinCount[msg.sender]);
