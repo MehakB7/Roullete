@@ -17,6 +17,7 @@ contract MinRoullete {
         mapping(address => BetType) userToBet;
         address[] participants;
         uint startTime;
+        uint endTime;
         bool isRunning;
     }
     uint gameId = 0;
@@ -25,7 +26,7 @@ contract MinRoullete {
     event gameStart();
     event gameEnded(uint result);
 
-    constructor ()  {
+    constructor() {
         owner = msg.sender;
     }
 
@@ -39,7 +40,11 @@ contract MinRoullete {
     function placeBet(BetType bet) external payable {
         require(msg.value >= Bet, "Insuffiecient Balance");
         require(!games[gameId].hasBet[msg.sender], "user Has already betted");
-        require(games[gameId].isRunning);
+        require(games[gameId].isRunning, "Game is already running");
+        require(
+            block.timestamp <= games[gameId].endTime,
+            " Betting time has expired"
+        );
         games[gameId].userToBet[msg.sender] = bet;
         games[gameId].hasBet[msg.sender] = true;
         games[gameId].participants.push(msg.sender);
@@ -49,6 +54,7 @@ contract MinRoullete {
         Game storage game = games[gameId];
         game.startTime = block.timestamp;
         game.isRunning = true;
+        game.endTime = block.timestamp + expireTime;
         emit gameStart();
     }
 
@@ -56,20 +62,19 @@ contract MinRoullete {
         Game storage game = games[gameId];
         game.isRunning = false;
         // calculate the random number;
-        game.result = uint256(keccak256(abi.encodePacked((block.timestamp)))) %2;   
+        game.result =
+            uint256(keccak256(abi.encodePacked((block.timestamp)))) %
+            2;
         gameId++;
 
-        for(uint i =0; i < game.participants.length; i++ ){
+        for (uint i = 0; i < game.participants.length; i++) {
             address _address = address(game.participants[i]);
-            if(game.userToBet[_address] == BetType(game.result)){
-                (bool success,)= payable(_address).call{value:Bet}(""); 
-                require(success);  
+            if (game.userToBet[_address] == BetType(game.result)) {
+                (bool success, ) = payable(_address).call{value: Bet}("");
+                require(success);
             }
         }
 
-        
         emit gameEnded(game.result);
-
-         
     }
 }
