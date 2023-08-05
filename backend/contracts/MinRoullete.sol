@@ -50,12 +50,13 @@ contract MinRoullete {
         games[gameId].participants.push(msg.sender);
     }
 
-    function startGame() external onlyOwner {
+    function startGame() external onlyOwner returns (uint) {
         Game storage game = games[gameId];
         game.startTime = block.timestamp;
         game.isRunning = true;
         game.endTime = block.timestamp + expireTime;
         emit gameStart();
+        return gameId;
     }
 
     function endGame() external onlyOwner {
@@ -76,5 +77,10 @@ contract MinRoullete {
         }
 
         emit gameEnded(game.result);
+    }
+
+    function totalPlayer(uint _gameId) external view returns (uint) {
+        Game storage game = games[_gameId];
+        return game.participants.length;
     }
 }
