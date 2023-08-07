@@ -21,10 +21,13 @@ contract MinRoullete {
         bool isRunning;
     }
     uint gameId = 0;
+
     mapping(uint => Game) public games;
 
     event gameStart();
     event gameEnded(uint result);
+
+    error HouseBalanceTooLow();
 
     constructor() {
         owner = msg.sender;
@@ -37,6 +40,23 @@ contract MinRoullete {
         _;
     }
 
+    function hasHouseBalance(
+        BetType bet,
+        uint value
+    ) internal view returns (bool) {
+        if (bet == BetType.Black && address(this).balance >= value * 4) {
+            return true;
+        }
+        if (bet == BetType.Green && address(this).balance >= value * 3) {
+            return true;
+        }
+        if (bet == BetType.Red && address(this).balance >= value * 2) {
+            return true;
+        }
+
+        return false;
+    }
+
     function placeBet(BetType bet) external payable {
         require(msg.value >= Bet, "Insuffiecient Balance");
         require(!games[gameId].hasBet[msg.sender], "user Has already betted");
@@ -45,6 +65,7 @@ contract MinRoullete {
             block.timestamp <= games[gameId].endTime,
             " Betting time has expired"
         );
+        if (!hasHouseBalance(bet, msg.value)) revert HouseBalanceTooLow();
         games[gameId].userToBet[msg.sender] = bet;
         games[gameId].hasBet[msg.sender] = true;
         games[gameId].participants.push(msg.sender);
